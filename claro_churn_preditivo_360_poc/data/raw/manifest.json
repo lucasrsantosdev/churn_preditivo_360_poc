@@ -1,0 +1,23 @@
+{
+  "projeto": "CLARO_CHURN_PREDITIVO_360_POC",
+  "tipo": "100% SINTETICO",
+  "seed": 42,
+  "clientes_gerados": 1200,
+  "meses_gerados": [
+    "2025-01",
+    "2026-10"
+  ],
+  "data_corte_teste": "2026-09-30",
+  "target_teste": "outubro/2026",
+  "aviso": "As pessoas, indices externos, eventos e churn sao inteiramente ficticios.",
+  "linhas_por_arquivo": {
+    "clientes.csv": 1200,
+    "contratos.csv": 2110,
+    "pagamentos.csv": 20740,
+    "atendimentos.csv": 23549,
+    "consumo.csv": 20740,
+    "contexto_externo.csv": 110,
+    "rede.csv": 110,
+    "churn_eventos.csv": 920
+  }
+}

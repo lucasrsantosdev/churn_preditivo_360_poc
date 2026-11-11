@@ -1,0 +1,22 @@
+CLARO | CHURN PREDITIVO 360 - EXECUCAO DE DEMONSTRACAO
+
+Status: EXECUTADO E TESTADO
+Tipo: 100% SINTETICO. NAO representa clientes, politicas ou metricas reais.
+
+Simulador: 1200 clientes ficticios; seed 42.
+Camadas: RAW > BRONZE > SILVER > GOLD.
+Treinamento: ate 2026-07-31.
+Validacao: 2026-08-31.
+Teste: corte 2026-09-30; desfechos de 2026-10-01 a 2026-10-31.
+Snapshots treino: 12288; validacao: 829; teste: 811.
+
+Churn total: modelo XGBoost; 13 ocorrencias no teste; PR-AUC/AP 0.031222.
+Churn parcial: modelo XGBoost; 16 ocorrencias no teste; PR-AUC/AP 0.11493.
+
+Painel: outputs/painel_churn_360_SINTETICO.html
+Previsoes: outputs/previsoes/previsoes_outubro_2026_SINTETICAS.csv
+Metricas: outputs/metricas/metricas_experimento.json
+
+ATENCAO: os resultados dependem das hipoteses do simulador; nao demonstram acuracia em dados reais.
+Os dois alvos tem modelos independentes, validados temporalmente e calibrados em agosto.
+As contribuicoes SHAP explicam a saida do modelo, nao as causas do churn.

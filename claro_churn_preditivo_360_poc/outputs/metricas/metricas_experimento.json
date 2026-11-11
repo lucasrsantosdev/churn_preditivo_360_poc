@@ -1,0 +1,94 @@
+{
+  "dados": "100% SINTETICOS",
+  "aviso": "Nao sao metricas de clientes reais da Claro.",
+  "treino_ate": "2026-07-31",
+  "validacao": "2026-08-31",
+  "teste_snapshot": "2026-09-30",
+  "teste_desfecho": "outubro/2026",
+  "amostras": {
+    "treino": 12288,
+    "validacao": 829,
+    "teste": 811
+  },
+  "total": {
+    "alvo": "total",
+    "modelo_escolhido": "XGBoost",
+    "criterio_escolha": "maior average precision na validacao agosto/2026",
+    "calibracao": "Platt sigmoid / agosto 2026",
+    "validacao_baseline": {
+      "n": 829,
+      "positivos": 18,
+      "prevalencia_real_sintetica": 0.021713,
+      "pr_auc_ap": 0.025586,
+      "roc_auc": 0.443896,
+      "brier": 0.254646,
+      "precision_top_5pct": 0.02381,
+      "recall_top_5pct": 0.055556,
+      "lift_top_5pct": 1.096561
+    },
+    "validacao_xgboost": {
+      "n": 829,
+      "positivos": 18,
+      "prevalencia_real_sintetica": 0.021713,
+      "pr_auc_ap": 0.037522,
+      "roc_auc": 0.536375,
+      "brier": 0.021264,
+      "precision_top_5pct": 0.071429,
+      "recall_top_5pct": 0.166667,
+      "lift_top_5pct": 3.289683
+    },
+    "teste_outubro": {
+      "n": 811,
+      "positivos": 13,
+      "prevalencia_real_sintetica": 0.01603,
+      "pr_auc_ap": 0.031222,
+      "roc_auc": 0.504531,
+      "brier": 0.015806,
+      "precision_top_5pct": 0.02439,
+      "recall_top_5pct": 0.076923,
+      "lift_top_5pct": 1.521576
+    },
+    "explicabilidade": "SHAP TreeExplainer, escala de log-odds; NAO causal"
+  },
+  "parcial": {
+    "alvo": "parcial",
+    "modelo_escolhido": "XGBoost",
+    "criterio_escolha": "maior average precision na validacao agosto/2026",
+    "calibracao": "Platt sigmoid / agosto 2026",
+    "validacao_baseline": {
+      "n": 829,
+      "positivos": 18,
+      "prevalencia_real_sintetica": 0.021713,
+      "pr_auc_ap": 0.092898,
+      "roc_auc": 0.884025,
+      "brier": 0.112134,
+      "precision_top_5pct": 0.071429,
+      "recall_top_5pct": 0.166667,
+      "lift_top_5pct": 3.289683
+    },
+    "validacao_xgboost": {
+      "n": 829,
+      "positivos": 18,
+      "prevalencia_real_sintetica": 0.021713,
+      "pr_auc_ap": 0.177914,
+      "roc_auc": 0.892246,
+      "brier": 0.020041,
+      "precision_top_5pct": 0.190476,
+      "recall_top_5pct": 0.444444,
+      "lift_top_5pct": 8.772487
+    },
+    "teste_outubro": {
+      "n": 811,
+      "positivos": 16,
+      "prevalencia_real_sintetica": 0.019729,
+      "pr_auc_ap": 0.11493,
+      "roc_auc": 0.912736,
+      "brier": 0.018196,
+      "precision_top_5pct": 0.121951,
+      "recall_top_5pct": 0.3125,
+      "lift_top_5pct": 6.181402
+    },
+    "explicabilidade": "SHAP TreeExplainer, escala de log-odds; NAO causal"
+  },
+  "nota_probabilidades": "Nenhuma renormalizacao necessaria."
+}

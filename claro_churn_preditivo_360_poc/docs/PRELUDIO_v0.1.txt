@@ -1,0 +1,141 @@
+CLARO | CUSTOMER JOURNEY & CHURN PREDITIVO 360º
+PRELÚDIO DO MODELO — PROPOSTA CONCEITUAL v0.1
+Data: 10/11/2026
+Situação: proposta para avaliação; nenhuma modelagem ou integração iniciada neste documento.
+
+1. VISÃO
+
+Transformar o estudo retrospectivo dos cancelamentos de outubro/2026 em um mecanismo de antecipação de churn que combine comportamento financeiro, rastreabilidade da jornada, alterações de relacionamento e contexto externo.
+
+O objetivo não é apenas responder “quem tem maior risco de cancelar?”, mas também:
+- O que mudou na jornada antes do risco aumentar?
+- Qual foi a sequência de eventos até o possível cancelamento?
+- O risco parece associado a pagamento, atendimento, qualidade, produto ou contexto?
+- Que acontecimentos reduzem ou neutralizam parcialmente o risco?
+- Qual ação de retenção pode ser priorizada, com justificativa auditável?
+
+2. HIPÓTESE CENTRAL
+
+O cancelamento pode resultar do acúmulo de sinais ao longo do tempo, e não de uma variável isolada. Um cliente pode atrasar uma fatura sem cancelar; outro pode estar adimplente e cancelar após sucessivas falhas de atendimento. Portanto, inadimplência não deve ser sinônimo automático de churn.
+
+A proposta é testar relações entre quatro mecanismos: (a) pressão financeira, (b) atrito na jornada, (c) mudanças de produto e consumo, (d) fatores externos. Em paralelo, observar sinais de recuperação e vínculo como contrapesos. São hipóteses a validar nos dados, não causas presumidas.
+
+3. REFERÊNCIAS DOS PRINTS DO MODELO ATUAL
+
+As telas de Oracle Cloud / Oracle Data Science mostram um fluxo de notebooks, modelagem com XGBoost, análises SHAP de churn total e parcial e avaliação de calibração.
+
+Entre as variáveis visíveis que merecem avaliação para a CLARO estão:
+- VAL_DIVIDA_NET_M0: valor de dívida líquida na referência analisada.
+- VAL_PAGAMENTO_NET_M0: valor de pagamentos na referência analisada.
+- QTD_PAG_ULTIMO_60D_M0 e indicadores de pagamento em 90 dias.
+- QTD_ATRASO_MAX_PAG_60D e QTD_PAG_SEM_ATRASO_90D.
+- QTD_RECLAMACAO_5M_MV e indicadores de ocorrência em canais.
+- QTD_CONTRATOS_M4 e tempo de relacionamento (TENURE_MIN_MESES).
+- QTD_MIGRACAO_5M_MV, consumo e comportamento de produto.
+- SEG_PURPLE_M0, que aparece com elevada importância SHAP, mas cuja definição de negócio e possível risco de vazamento precisam ser confirmados.
+
+Os gráficos indicam relevância preditiva dentro do modelo exibido, não causalidade. Valores absolutos médios de SHAP não são pesos de uma regra de negócio e não informam sozinhos se o sinal aumenta ou reduz o risco. As classes e prevalências vistas nas telas pertencem àquela execução, não devem ser tratadas como métricas alcançadas pela nova POC CLARO.
+
+4. NOSSO RECORTE TEMPORAL
+
+Coorte de validação: clientes ativos e elegíveis em 30/09/2026.
+Janela de observação: 01/04/2026 a 30/09/2026, com granularidade diária/por evento quando houver.
+Desfecho: ocorrência de cancelamento entre 01/10/2026 e 31/10/2026.
+
+O desenho deverá diferenciar cancelamento TOTAL, PARCIAL e ausência de cancelamento, conforme definição oficial do negócio (produto, contrato, CPF e regras de elegibilidade).
+
+IMPORTANTE: o estudo apenas dos cancelados de outubro descreve causas e trajetórias, mas não é suficiente para treinar e validar um preditor. O dataset preditivo deverá incluir clientes não cancelados e, idealmente, múltiplas coortes históricas com treinamento e teste temporal separados. Nenhuma informação conhecida apenas após a data de corte poderá ser usada nas features.
+
+5. GRUPOS DE VARIÁVEIS CANDIDATAS
+
+A. PAGAMENTO / PRESSÃO FINANCEIRA
+   Atrasos em 30/60/90 dias; quantidade de faturas vencidas; saldo em aberto; valor pago versus valor devido; pagamento parcial; recorrência de atraso; parcelamentos e renegociações; promessas de pagamento; melhora ou piora do padrão de adimplência. Datas e valores devem refletir o conhecimento existente em cada data de corte.
+
+B. RASTREABILIDADE DA JORNADA
+   URA inbound/outbound; ligações e tentativas repetidas; reclamações; recorrência do mesmo motivo; transferências de atendimento; protocolo e resolução; loja própria/PDV; site e aplicativo; visitas técnicas para fixa; intervalos entre ocorrência, atendimento e solução; eventos consecutivos sem resolução.
+
+C. PRODUTO / CONTRATO / USO
+   Móvel e fixa analisados separadamente quando necessário; quantidade e tipo de contratos; plano e valor; alterações de plano; migração; tempo de relacionamento; mudanças de consumo; redução sustentada do uso; perda parcial de serviços; eventos de fidelização, benefícios e reajustes, quando permitidos e disponíveis.
+
+D. FATORES EXTERNOS (CONTEXTUAIS)
+   Calendário e sazonalidade; indicadores econômicos regionais publicados na época; interrupções relevantes de infraestrutura/rede; eventos climáticos relacionados a falhas de serviço; mudanças competitivas ou regulatórias comprováveis. Toda fonte deverá ter cobertura, granularidade geográfica, data de publicação, permissões de uso e vínculo verificável com a região/período do cliente. Não acrescentar variável externa apenas por correlação espúria.
+
+E. SINAIS DE CONTRAPESO / RECUPERAÇÃO
+   Regularização da dívida; sequência recente de pagamentos em dia; reclamação efetivamente resolvida; atendimento com resolução confirmada; estabilidade de uso após incidente; recuperação da qualidade; adesão voluntária a solução de retenção; melhora persistente no comportamento. Esses sinais poderão reduzir o risco estimado somente quando a evidência histórica sustentar esse efeito.
+
+6. SISTEMA DE CONTRAPESOS — PROPOSTA
+
+O termo “contrapeso” significa avaliar simultaneamente fatores de pressão e fatores protetivos. Exemplo: dívida em crescimento + reclamações recorrentes sugerem maior vulnerabilidade; uma regularização financeira seguida de atendimento resolutivo pode apontar uma trajetória diferente.
+
+Não serão inventados pesos de 40%, 30%, 20% etc. como se fossem científicos. Propomos duas leituras complementares:
+
+(a) Probabilidade preditiva calibrada: XGBoost ou modelo comparativo treinado com dados históricos, capturando não linearidades e interações sem impor pesos arbitrários.
+(b) Score de contrapesos para interpretação operacional: agrupamento auditável de evidências financeiras, da jornada, do produto, externas e protetivas, com pesos ou regras somente depois de definidos e testados com negócio/dados.
+
+A camada de contrapesos explicará o risco e apoiará ações de retenção; não deverá alterar silenciosamente a probabilidade calibrada do modelo. As contribuições SHAP poderão indicar quais variáveis foram relevantes para cada previsão, respeitando suas limitações.
+
+7. O QUE O MODELO DEVERÁ ENTREGAR POR CLIENTE E DATA DE CORTE
+
+- Probabilidade estimada de churn total nos próximos 30 dias.
+- Probabilidade estimada de churn parcial nos próximos 30 dias, se definido como desfecho separado.
+- Faixa de priorização (a estabelecer com base no desempenho e na capacidade operacional).
+- Linha do tempo dos eventos de até 180 dias.
+- Principais fatores associados ao risco individual (com direção de contribuição quando validada).
+- Sinais positivos/contrapesos observados.
+- Origem e data de cada evidência; confiança na completude dos dados.
+- Sugestão de encaminhamento para análise humana, sem atribuir causa definitiva automaticamente.
+
+8. ARQUITETURA CONCEITUAL
+
+ORACLE / FONTES INTERNAS + FONTES EXTERNAS AUTORIZADAS
+       ↓
+RAW — extração e preservação dos eventos de origem
+       ↓
+BRONZE — padronização técnica, rastreio de carga e qualidade inicial
+       ↓
+SILVER — entidades cliente/contrato/produto, vínculos, eventos e linha do tempo
+       ↓
+GOLD — snapshots históricos, features temporais, rótulos e datasets de treino/validação
+       ↓
+MODELO — baseline interpretável + XGBoost, validação temporal, calibração e SHAP
+       ↓
+MART DE RISCO / DASHBOARD — risco, trajetória, contrapesos, motivos associados e monitoramento
+
+A arquitetura em camadas é uma proposta lógica; OCI é o ambiente de execução possível, não um sinônimo de arquitetura Medallion. A POC pode produzir extrações Oracle, base tratada para Excel, painel conectado e material PowerPoint reutilizável, conforme o plano já estabelecido.
+
+9. DESENHO DE VALIDAÇÃO
+
+- Verificar definições de churn total/parcial e a unidade de observação: cliente × contrato/produto × data.
+- Evitar vazamento temporal: cancelamento solicitado, retenção posterior, bloqueio e qualquer campo atualizado após 30/09 não entram como preditores daquele corte.
+- Preparar coortes passadas com janelas equivalentes de 180 dias, quando houver histórico.
+- Comparar baseline simples com modelo XGBoost; considerar desbalanceamento das classes.
+- Avaliar PR-AUC, recall e precision no topo do ranking, lift, matriz de confusão, Brier score e curvas de calibração por grupo e por tempo.
+- Validar modelos por produto e tipo de churn; segmentações só se tiverem significado de negócio e não produzirem vazamento.
+- Avaliar estabilidade das features, explicações SHAP e desempenho ao longo dos meses.
+- Examinar limitações de cobertura regional, representatividade, privacidade e LGPD antes de uso operacional.
+
+10. ENTREGÁVEIS DA POC
+
+01. Dicionário de variáveis e regras de negócio (inclusive campos de pagamento e identificadores de jornada).
+02. Mapeamento de tabelas Oracle, chaves, joins e rastreabilidade de eventos.
+03. CTE/base integrada cliente–contrato–produto–jornada, com datas de referência.
+04. Dataset de snapshots de treino e teste, com rotulagem auditável.
+05. Comparação entre baseline e modelo preditivo com calibração e SHAP.
+06. Tabela de contrapesos e explicações rastreáveis.
+07. Excel de base sumarizada e painel Excel/PowerPoint atualizáveis.
+08. Relatório com premissas, limitações, achados e próximos testes.
+
+11. CRITÉRIOS PARA APROVAR O INÍCIO DA CONSTRUÇÃO
+
+A. Confirmar o significado dos campos nos prints, especialmente SEG_PURPLE, VAL_DIVIDA, VAL_PAGAMENTO, classes 1/2 e sufixos temporais M0/M4/5M.
+B. Confirmar disponibilidade real e qualidade das fontes Oracle/URA/PDV/app/site/visitas/faturamento.
+C. Confirmar como serão identificados clientes NÃO cancelados e o histórico de meses anteriores.
+D. Validar o recorte temporal de outubro, os tipos de churn e as entidades (CPF, contrato e linha).
+E. Selecionar as fontes externas realmente úteis e com temporalidade verificável.
+F. Aprovar o escopo mínimo de POC antes de codificação.
+
+DECLARAÇÃO DE ESCOPO
+
+Este texto é um prelúdio para discussão e aprovação do conceito. Não afirma que o modelo novo já esteja treinado, que variáveis externas já estejam disponíveis, que pesos já tenham sido estimados ou que o comportamento observado tenha relação causal comprovada com cancelamento.
+
+FIM DO PRELÚDIO v0.1
